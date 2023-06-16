@@ -7,7 +7,7 @@ from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain, SequentialChain 
 from langchain.memory import ConversationBufferMemory
-from langchain.utilities import WikipediaAPIWrapper 
+
 
 os.environ['OPENAI_API_KEY'] = apikey
 
@@ -22,8 +22,8 @@ title_template = PromptTemplate(
 )
 
 script_template = PromptTemplate(
-    input_variables = ['title', 'wikipedia_research'], 
-    template='Tell me which repositories  is the most technically complex and  provide a link for the complex repositorie TITLE: {title} provide a link for the complex repositorie:{wikipedia_research} '
+    input_variables = ['title'], 
+    template='Tell me which repositories  is the most technically complex and  provide a link for the complex repositorie TITLE: {title}'
 )
 
 # Memory 
@@ -36,13 +36,11 @@ llm = OpenAI(temperature=0.9)
 title_chain = LLMChain(llm=llm, prompt=title_template, verbose=True, output_key='title', memory=title_memory)
 script_chain = LLMChain(llm=llm, prompt=script_template, verbose=True, output_key='script', memory=script_memory)
 
-wiki = WikipediaAPIWrapper()
 
 # Show stuff to the screen if there's a prompt
 if prompt: 
     title = title_chain.run(prompt)
-    wiki_research = wiki.run(prompt) 
-    script = script_chain.run(title=title, wikipedia_research=wiki_research)
+    script = script_chain.run(title=title)
 
     st.write(title) 
     st.write(script) 
